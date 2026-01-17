@@ -1,35 +1,33 @@
 require("dotenv").config();
 const express = require("express");
-const app = express();
 const cors = require("cors");
+
+const app = express();
 
 /* ✅ ALLOWED ORIGINS */
 const allowedOrigins = [
     "https://chatnyx.vercel.app",
-    process.env.CLIENT_URL
+    process.env.CLIENT_URL,
+    "http://localhost:5173"
 ].filter(Boolean);
 
 app.use(cors({
-    origin: function (origin, callback) {
-        // Allow server-to-server, Postman, curl
+    origin: (origin, callback) => {
         if (!origin) return callback(null, true);
 
         if (allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error("Not allowed by CORS"));
+            return callback(null, true);
         }
+        return callback(null, false);
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
-/* ✅ PRE-FLIGHT SUPPORT */
-app.options("*", cors());
-
 app.use(express.json());
 
+/* ✅ ROUTES */
 app.use("/auth", require("./modules/auth"));
 app.use("/users", require("./modules/users"));
 app.use("/chats", require("./modules/chats"));
