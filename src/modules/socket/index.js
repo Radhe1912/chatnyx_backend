@@ -11,7 +11,7 @@ let io;
 async function initSocket(server) {
   io = new Server(server, {
     cors: {
-      origin: process.env.CLIENT_URL || "http://localhost:5173",
+      origin: process.env.CLIENT_URL || "https://chatnyx.vercel.app",
       credentials: true,
     },
   });

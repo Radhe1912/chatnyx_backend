@@ -5,7 +5,7 @@ const cors = require("cors");
 
 /* ✅ ALLOWED ORIGINS */
 const allowedOrigins = [
-    "http://localhost:5173",
+    "https://chatnyx.vercel.app",
     process.env.CLIENT_URL
 ].filter(Boolean);
 
