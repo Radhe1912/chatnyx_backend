@@ -4,7 +4,9 @@ const cloudinary = require("../../config/cloudinary");
 async function send(req, res) {
     try {
         const senderId = req.user.id;
-        const { chatId, content, type } = req.body;
+        const chatId = req.body?.chatId;
+        const content = req.body?.content;
+        const type = req.body?.type;
 
         if (!chatId) {
             return res.status(400).json({ message: "chatId required" });
@@ -14,12 +16,7 @@ async function send(req, res) {
         let finalType = type || "text";
 
         if (req.file) {
-            const uploadResult = await cloudinary.uploader.upload(
-                req.file.path,
-                { folder: "chatnyx" }
-            );
-
-            finalContent = uploadResult.secure_url;
+            finalContent = req.file.path;
             finalType = "image";
         }
 
