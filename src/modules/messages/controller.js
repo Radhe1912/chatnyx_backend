@@ -1,27 +1,38 @@
-// modules/messages/controller.js
 const messageService = require("./service");
+const cloudinary = require("../../config/cloudinary");
 
 async function send(req, res) {
     try {
         const senderId = req.user.id;
         const { chatId, content, type } = req.body;
 
-        if (!chatId || !content) {
-            return res.status(400).json({ message: "chatId and content required" });
+        if (!chatId) {
+            return res.status(400).json({ message: "chatId required" });
+        }
+
+        let finalContent = content;
+        let finalType = type || "text";
+
+        if (req.file) {
+            const uploadResult = await cloudinary.uploader.upload(
+                req.file.path,
+                { folder: "chatnyx" }
+            );
+
+            finalContent = uploadResult.secure_url;
+            finalType = "image";
         }
 
         const message = await messageService.sendMessage({
             chatId,
             senderId,
-            content,
-            type,
+            content: finalContent,
+            type: finalType,
         });
-
-        // 🔜 socket.emit("new_message", message)
 
         return res.status(201).json(message);
     } catch (err) {
-        console.error(err);
+        console.error("SEND MESSAGE ERROR:", err);
         return res.status(500).json({ message: "Server error" });
     }
 }
